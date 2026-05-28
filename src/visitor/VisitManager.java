@@ -14,5 +14,24 @@ public class VisitManager {//srp each class hass their own logic, logic for crea
         
         return newVisit;
     }
+    public static void viewVisitDetails(Visit visit) {
+        if (visit == null) {
+            System.out.println("No visit record found.");
+            return;
+        }
+
+        System.out.println("~~~ VISIT DETAILS ~~~");
+        System.out.println("Date: " + visit.getDate());
+        System.out.println("Time: " + visit.getTime());
+        System.out.println("Prisoner ID: " + visit.getPrisonerId());
+        System.out.println("Status: [" + visit.getStatus() + "]"); 
+        
+        if (visit.getStaffId() != 0) {
+            System.out.println("Reviewed By Staff ID: " + visit.getStaffId());
+        } else {
+            System.out.println("Awaiting Guard Review.");
+        }
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~");
+    }
 }
 

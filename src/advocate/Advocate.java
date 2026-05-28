@@ -1,15 +1,16 @@
 package advocate;
 
+import model.Prisoner;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Advocate {
-    private int advocateId;
+    private int userId;
     private String name;
     private List<Prisoner> assignedPrisoners; //prisoners advocating for 
 
     public Advocate(int advocateId, String name) {
-        this.advocateId = advocateId;
+        this.userId = advocateId;
         this.name = name;
         this.assignedPrisoners = new ArrayList<>();
     }
@@ -25,6 +26,6 @@ public class Advocate {
     }
 
     // Getters
-    public int getAdvocateId() { return advocateId; }
+    public int getAdvocateId() { return userId; }
     public String getName() { return name; }
 }
