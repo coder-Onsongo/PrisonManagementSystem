@@ -5,18 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Advocate {
-    private int userId;
+   private int userId;
     private String name;
-    private List<Prisoner> assignedPrisoners; //prisoners advocating for 
+    private String password; 
+    private List<Prisoner> assignedPrisoners; 
 
-    public Advocate(int advocateId, String name) {
-        this.userId = advocateId;
+    public Advocate(int userId, String name, String password) {
+        this.userId = userId;
         this.name = name;
+        this.password = password;
         this.assignedPrisoners = new ArrayList<>();
     }
 
     // adds prisoners incharge of
-    void loadPrisoner(Prisoner prisoner) {
+    public void loadPrisoner(Prisoner prisoner) {
         this.assignedPrisoners.add(prisoner);
     }
 
@@ -28,4 +30,5 @@ public class Advocate {
     // Getters
     public int getAdvocateId() { return userId; }
     public String getName() { return name; }
+    public String getPassword() { return password; }
 }
