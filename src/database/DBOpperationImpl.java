@@ -10,7 +10,7 @@ import visitor.DBOSelectVisits;
 import advocate.AdvocateOperations;
 
 
-public class DBOpperationImpl implements AdvocateOperations, DBOInsertVisit,  DBOSelectVisits {
+public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits {
     private DBConnection dbc = new DBConnection();
 
 // advocate view their prisoners
@@ -82,5 +82,49 @@ public class DBOpperationImpl implements AdvocateOperations, DBOInsertVisit,  DB
             System.err.println("DB Error booking visit: " + e.getMessage());
             return false;
         }
+    }
+
+    // 💡 MOVE ALL SQL QUERIES FROM LOGIN HERE
+    @Override
+    public Object authenticateUser(int userId, String password) {
+        String query = "SELECT role, name FROM systemusers WHERE userid = ? AND password = ?";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setInt(1, userId);
+            pst.setString(2, password);
+            
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    String databaseRole = rs.getString("role");
+                    String realName = rs.getString("name"); 
+                    
+                    if ("VISITOR".equalsIgnoreCase(databaseRole)) {
+                        int linkedPrisonerId = 1; // Default fallback
+                        
+                        // Visitor secondary target prisoner query
+                        String lookupQuery = "SELECT prisonerid FROM visits WHERE visitorid = ? LIMIT 1";
+                        try (PreparedStatement pstLookup = dbc.con.prepareStatement(lookupQuery)) {
+                            pstLookup.setInt(1, userId);
+                            try (ResultSet rsLookup = pstLookup.executeQuery()) {
+                                if (rsLookup.next()) {
+                                    linkedPrisonerId = rsLookup.getInt("prisonerid");
+                                }
+                            }
+                        }
+                        // Instantiates and returns the exact visitor type
+                        return new visitor.Visitor(userId, realName, password, linkedPrisonerId);
+                        
+                    } else if ("ADVOCATE".equalsIgnoreCase(databaseRole)) {
+                        // Instantiates and returns the exact advocate type
+                        return new advocate.Advocate(userId, realName, password);
+                    }
+                    
+                    // Add Guard instantiation here later if you build a Guard class
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Database Authentication Error: " + e.getMessage());
+        }
+        return null; // Denied access or exception caught
     }
 }

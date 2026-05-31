@@ -9,7 +9,7 @@ import advocate.AdvocateOperations;
 import visitor.DBOInsertVisit;
 import visitor.DBOSelectVisits;
 
-public class DBOperations implements AdvocateOperations, DBOInsertVisit, DBOSelectVisits {
+public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits {
 
     private final DBOpperationImpl implementation;
 
@@ -32,13 +32,11 @@ public class DBOperations implements AdvocateOperations, DBOInsertVisit, DBOSele
     // interface impl that getting prisoners logic from other classes 
    @Override
     public List<Prisoner> getPrisonersForAdvocate(int advocateId) {
-        // FIXED: Changed return type to List<Prisoner> and routed to getPrisonersForAdvocate
         return implementation.getPrisonersForAdvocate(advocateId);
+    }  
+
+    @Override
+    public Object authenticateUser(int userId, String password) {
+        return implementation.authenticateUser(userId, password);
     }
-
-    
-
-    
-
-    
 }
