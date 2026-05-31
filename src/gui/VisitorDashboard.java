@@ -1,8 +1,8 @@
 package gui;
 
-import database.DBConnection;
 import visitor.Visitor;
 import visitor.Visit;
+import database.DBOperations;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,11 +16,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import java.sql.*;
+import java.util.List;
 
 public class VisitorDashboard {
 
-    private DBConnection dbc = new DBConnection();
+    //implements dbopperations logic
+    private DBOperations dbOps = new DBOperations(); 
     private Visitor currentVisitor;
     private TableView<Visit> table = new TableView<>();
     private Label lblFeedback = new Label();
@@ -32,16 +33,13 @@ public class VisitorDashboard {
     public void show(Stage stage) {
         stage.setTitle("Prison Management System - Visitor Dashboard");
 
-        // Main Layout Container Stack
         VBox mainRoot = new VBox(25);
         mainRoot.setPadding(new Insets(30, 30, 30, 30));
         mainRoot.setAlignment(Pos.TOP_CENTER);
 
-        // Header Section
         Label lblTitle = new Label("Welcome, " + currentVisitor.getName());
         lblTitle.setFont(Font.font("Tahoma", FontWeight.BOLD, 22));
 
-        //logged visits table view
         Label lblSection1 = new Label("Your Booking Records:");
         lblSection1.setFont(Font.font("Tahoma", FontWeight.SEMI_BOLD, 14));
         lblSection1.setAlignment(Pos.CENTER_LEFT);
@@ -69,10 +67,9 @@ public class VisitorDashboard {
         table.getColumns().addAll(colId, colDate, colTime, colPrisoner, colStatus);
         table.setPrefHeight(180);
 
-        // Populate Table View with Active sessions
+        // Populate Table View with data
         refreshTableData();
 
-        // BOOKING NEW VISIT FORM
         Label lblSection2 = new Label("Request a New Visit Window:");
         lblSection2.setFont(Font.font("Tahoma", FontWeight.SEMI_BOLD, 14));
 
@@ -100,7 +97,7 @@ public class VisitorDashboard {
 
         lblFeedback.setFont(Font.font("Arial", FontWeight.MEDIUM, 14));
 
-        //Submit Request to PostgreSQL Database
+        // subbmiting request btn 
         btnSubmit.setOnAction(e -> {
             String dateVal = txtDate.getText().trim();
             String timeVal = txtTime.getText().trim();
@@ -111,32 +108,26 @@ public class VisitorDashboard {
                 return;
             }
 
-            // Execute Insert Query
-            String insertQuery = "INSERT INTO visits (visitdate, visittime, prisonerid, visitorid, staffid, status) VALUES (?, CAST(? AS time), ?, ?, NULL, 'PENDING')";
+            // book visitor using dbopperations
+            boolean success = dbOps.bookNewVisit(
+                currentVisitor.getVisitorId(), 
+                currentVisitor.getTargetPrisonerId(), 
+                dateVal, 
+                timeVal
+            );
             
-            try (PreparedStatement pst = dbc.con.prepareStatement(insertQuery)) {
-                pst.setDate(1, Date.valueOf(dateVal));
-                pst.setString(2, timeVal);
-                pst.setInt(3, currentVisitor.getTargetPrisonerId());
-                pst.setInt(4, currentVisitor.getVisitorId());
-
-                pst.executeUpdate();
-                
+            if (success) {
                 lblFeedback.setTextFill(Color.GREEN);
                 lblFeedback.setText("Success: Visit request filed under PENDING status.");
                 txtDate.clear();
                 txtTime.clear();
-                refreshTableData();
-            } catch (IllegalArgumentException dateEx) {
+                refreshTableData(); // Re-sync ui
+            } else {
                 lblFeedback.setTextFill(Color.RED);
-                lblFeedback.setText("Format Error: Ensure date matches YYYY-MM-DD pattern.");
-            } catch (SQLException sqlEx) {
-                lblFeedback.setTextFill(Color.RED);
-                lblFeedback.setText("Database Error: Could not save request. " + sqlEx.getMessage());
+                lblFeedback.setText("Error: Failed to save booking details.");
             }
         });
 
-        // Logout Button
         Button btnLogout = new Button("Log Out");
         btnLogout.setOnAction(e -> {
             Login login = new Login();
@@ -146,40 +137,17 @@ public class VisitorDashboard {
         HBox bottomControls = new HBox(15, btnLogout, lblFeedback);
         bottomControls.setAlignment(Pos.CENTER_LEFT);
 
-        // Add everything to layout stack
         mainRoot.getChildren().addAll(lblTitle, lblSection1, table, lblSection2, formGrid, bottomControls);
 
-        // Display Window
         Scene scene = new Scene(mainRoot, 600, 520);
         stage.setScene(scene);
         stage.show();
     }
 
-    // Direct database refresh
+    // pull history using the ui 
     private void refreshTableData() {
         table.getItems().clear();
-        String selectQuery = "SELECT visitid, visitdate, visittime, prisonerid, visitorid, staffid, status " +
-                             "FROM visits WHERE visitorid = ? ORDER BY visitid DESC";
-
-        try (PreparedStatement pst = dbc.con.prepareStatement(selectQuery)) {
-            pst.setInt(1, currentVisitor.getVisitorId());
-
-            try (ResultSet rs = pst.executeQuery()) {
-                while (rs.next()) {
-                    Visit v = new Visit(
-                        rs.getInt("visitid"),
-                        rs.getString("visitdate"),
-                        rs.getString("visittime"),
-                        rs.getInt("prisonerid"),
-                        rs.getInt("visitorid"),
-                        rs.getInt("staffid"),
-                        rs.getString("status")
-                    );
-                    table.getItems().add(v);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Failed to synchronize table data: " + e.getMessage());
-        }
+        List<Visit> list = dbOps.getVisitHistoryForVisitor(currentVisitor.getVisitorId());
+        table.getItems().addAll(list);
     }
 }

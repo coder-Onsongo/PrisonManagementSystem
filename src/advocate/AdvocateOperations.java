@@ -1,5 +1,8 @@
 package advocate;
 
+import java.util.List;
+import model.Prisoner;
+
 public interface AdvocateOperations {
-    void viewMyAssignedPrisoners(int advocateId);
+    public List<Prisoner> getPrisonersForAdvocate(int advocateId);
 }
