@@ -1,14 +1,10 @@
 package database;
 
-import interfaces.DBOLogin;
 import model.Prisoner;
 import visitor.Visit;
 import java.util.List;
 
 // 💡 Importing your custom feature interfaces
-import interfaces.AdvocateOperations;
-import interfaces.DBOInsertVisit;
-import interfaces.DBOSelectVisits;
 
 public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits {
 

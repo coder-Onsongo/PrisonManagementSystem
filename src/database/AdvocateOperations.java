@@ -1,4 +1,4 @@
-package interfaces;
+package database;
 
 import java.util.List;
 import model.Prisoner;
