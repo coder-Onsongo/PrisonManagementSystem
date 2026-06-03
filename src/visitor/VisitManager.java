@@ -1,6 +1,6 @@
 package visitor;
 
-public class VisitManager {//srp each class hass their own logic, logic for creating a visit
+public abstract class VisitManager {//logic for creating a visit
     public VisitManager(){}
     public static Visit bookVisit(int visitorId, int prisonerId, String date, String time) {
         
