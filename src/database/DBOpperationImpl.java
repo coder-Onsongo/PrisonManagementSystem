@@ -1,13 +1,14 @@
 package database;
 
+import interfaces.DBOLogin;
 import model.Prisoner;
 import visitor.Visit;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import visitor.DBOInsertVisit;
-import visitor.DBOSelectVisits;
-import advocate.AdvocateOperations;
+import interfaces.DBOInsertVisit;
+import interfaces.DBOSelectVisits;
+import interfaces.AdvocateOperations;
 
 
 public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits {

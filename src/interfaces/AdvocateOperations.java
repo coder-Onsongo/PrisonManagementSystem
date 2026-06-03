@@ -1,4 +1,4 @@
-package advocate;
+package interfaces;
 
 import java.util.List;
 import model.Prisoner;
