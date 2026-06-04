@@ -18,7 +18,7 @@ public class DBConnection {
         Class.forName("org.postgresql.Driver");
         System.out.println("load driver success");
        }catch (ClassNotFoundException cnfe){
-           System.out.println("load driver failed");
+           System.out.println("load driver failed"+ cnfe.getMessage());
        }
        //establishhhhhhhh the connection 
        try{
@@ -26,7 +26,7 @@ public class DBConnection {
            System.out.println("driver loaded success");
        }
        catch(SQLException sqle){
-           System.out.println("driver loadeer failed ");
+           System.out.println("driver loadeer failed "+ sqle.getMessage());
        }
        return con;
    }

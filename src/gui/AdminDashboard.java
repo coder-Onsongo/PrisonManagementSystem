@@ -3,6 +3,7 @@ package gui;
 import systemsAdmin.SystemAdmin;
 import database.DBOperations;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -114,6 +115,17 @@ public class AdminDashboard {
 
         tabPane.getTabs().addAll(userTab, prisonerTab);
         root.setCenter(tabPane);
+        
+        //log out btn
+        HBox bottomPane = new HBox();
+        bottomPane.setPadding(new Insets(10, 0, 0, 0));
+        bottomPane.setAlignment(Pos.CENTER_RIGHT);
+        
+        Button btnLogout = new Button("Log Out");
+        btnLogout.setPrefSize(120, 35);
+        btnLogout.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));
+        bottomPane.getChildren().add(btnLogout);
+        root.setBottom(bottomPane);
 
         // extensively researched event handling (04 -06- 2026) 😂😂
 
