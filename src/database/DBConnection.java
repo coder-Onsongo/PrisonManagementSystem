@@ -18,19 +18,25 @@ public class DBConnection {
         Class.forName("org.postgresql.Driver");
         System.out.println("load driver success");
        }catch (ClassNotFoundException cnfe){
-           System.out.println("load driver failed");
+           System.out.println("load driver failed"+ cnfe.getMessage());
        }
        //establishhhhhhhh the connection 
        try{
            con  = DriverManager.getConnection(url, user, password);
            System.out.println("driver loaded success");
        }
+<<<<<<< HEAD
        catch(SQLException sqle) {
     System.out.println("driver loadeer failed "+ sqle.getMessage())
             ;
     
 }
        
+=======
+       catch(SQLException sqle){
+           System.out.println("driver loadeer failed "+ sqle.getMessage());
+       }
+>>>>>>> b3dd21e08003f196dcab0d220dd9841ba0f7f145
        return con;
    }
 
