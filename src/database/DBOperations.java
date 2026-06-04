@@ -5,7 +5,7 @@ import visitor.Visit;
 import java.util.List;
 
 
-public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits, DBOAdminOperations {
+public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits, DBOAdminPrisonerOperations, DBOSystemUserOperations {
 
     private final DBOpperationImpl implementation;
 

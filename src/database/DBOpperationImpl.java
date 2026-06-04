@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits, DBOAdminOperations {
+public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits, DBOAdminPrisonerOperations, DBOSystemUserOperations {
     private DBConnection dbc = new DBConnection();
 
 // advocate view their prisoners
