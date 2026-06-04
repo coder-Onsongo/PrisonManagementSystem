@@ -4,9 +4,8 @@ import model.Prisoner;
 import visitor.Visit;
 import java.util.List;
 
-// 💡 Importing your custom feature interfaces
 
-public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits {
+public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits, DBOAdminOperations {
 
     private final DBOpperationImpl implementation;
 
@@ -35,5 +34,45 @@ public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisi
     @Override
     public Object authenticateUser(int userId, String password) {
         return implementation.authenticateUser(userId, password);
+    }
+    
+    @Override
+    public List<String> viewAllSystemUsers() {
+        return implementation.viewAllSystemUsers();
+    }
+
+    @Override
+    public boolean addSystemUser(int userId, String name, String password, String role) {
+        return implementation.addSystemUser(userId, name, password, role);
+    }
+
+    @Override
+    public boolean alterSystemUser(int userId, String newName, String newPassword, String newRole) {
+        return implementation.alterSystemUser(userId, newName, newPassword, newRole);
+    }
+
+    @Override
+    public boolean deleteSystemUser(int userId) {
+        return implementation.deleteSystemUser(userId);
+    }
+
+    @Override
+    public List<String> viewAllPrisoners() {
+        return implementation.viewAllPrisoners();
+    }
+
+    @Override
+    public boolean addPrisoner(int prisonerId, String name, String crime, int sentenceMonths) {
+        return implementation.addPrisoner(prisonerId, name, crime, sentenceMonths);
+    }
+
+    @Override
+    public boolean alterPrisoner(int prisonerId, String newName, String newCrime, int newSentenceMonths) {
+        return implementation.alterPrisoner(prisonerId, newName, newCrime, newSentenceMonths);
+    }
+
+    @Override
+    public boolean deletePrisoner(int prisonerId) {
+        return implementation.deletePrisoner(prisonerId);
     }
 }

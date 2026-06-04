@@ -1,7 +1,6 @@
 package visitor;
 
-public abstract class VisitManager {//logic for creating a visit
-    public VisitManager(){}
+public interface VisitManager {//logic for creating a visit
     public static Visit bookVisit(int visitorId, int prisonerId, String date, String time) {
         
         if (date.isEmpty() || time.isEmpty()) {

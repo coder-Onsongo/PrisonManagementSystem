@@ -78,6 +78,11 @@ public class Login extends Application {
                         AdvocateDashboard dashboard = new AdvocateDashboard((advocate.Advocate) userSession);
                         dashboard.show(primaryStage);
                     }
+                    else if (userSession instanceof systemsAdmin.SystemAdmin) {
+                        System.out.println("Switching to: System Admin Dashboard");
+                        gui.AdminDashboard dashboard = new gui.AdminDashboard((systemsAdmin.SystemAdmin) userSession);
+                        dashboard.show(primaryStage);
+                        }
                 } else {
                     lblMessage.setTextFill(Color.RED);
                     lblMessage.setText("Access Denied: Invalid ID or Password.");

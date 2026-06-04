@@ -1,6 +1,6 @@
 package visitor;
 
-public class Visitor {
+public class Visitor implements VisitManager {
     private int userId;
     private String name;
     private int targetPrisonerId; // 1:1 relationship, one visitor for one prisoner

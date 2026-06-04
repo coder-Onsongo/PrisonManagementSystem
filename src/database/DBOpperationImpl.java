@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits {
+public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits, DBOAdminOperations {
     private DBConnection dbc = new DBConnection();
 
 // advocate view their prisoners
@@ -108,12 +108,16 @@ public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsert
                                 }
                             }
                         }
-                        // Instantiates and returns the exact visitor type
+                        
                         return new visitor.Visitor(userId, realName, password, linkedPrisonerId);
                         
                     } else if ("ADVOCATE".equalsIgnoreCase(databaseRole)) {
                         // Instantiates and returns the exact advocate type
                         return new advocate.Advocate(userId, realName, password);
+                    }
+                    // Instantiates and returns the exact admin type
+                    else if ("SYSTEM_ADMIN".equalsIgnoreCase(databaseRole)) {
+                        return new systemsAdmin.SystemAdmin(userId, realName, password);
                     }
                     
                     // Add Guard instantiation here later if you build a Guard class
@@ -123,5 +127,143 @@ public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsert
             System.err.println("Database Authentication Error: " + e.getMessage());
         }
         return null; // Denied access or exception caught
+    }
+    //admin functions
+    // --- SYSTEM USERS CRUD
+
+    @Override
+    public java.util.List<String> viewAllSystemUsers() {
+        java.util.List<String> usersList = new java.util.ArrayList<>();
+        String query = "SELECT userid, name, role FROM systemusers ORDER BY userid ASC";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query);
+             ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                String userInfo = "ID: " + rs.getInt("userid") + 
+                                  " | Name: " + rs.getString("name") + 
+                                  " | Role: " + rs.getString("role");
+                usersList.add(userInfo);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching system users: " + e.getMessage());
+        }
+        return usersList;
+    }
+
+    @Override
+    public boolean addSystemUser(int userId, String name, String password, String role) {
+        String query = "INSERT INTO systemusers (userid, name, password, role) VALUES (?, ?, ?, ?::user_role)";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setInt(1, userId);
+            pst.setString(2, name);
+            pst.setString(3, password);
+            pst.setString(4, role.toUpperCase()); // Keeps roles normalized
+            
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error inserting system user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean alterSystemUser(int userId, String newName, String newPassword, String newRole) {
+        String query = "UPDATE systemusers SET name = ?, password = ?, role = ?::user_role WHERE userid = ?";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setString(1, newName);
+            pst.setString(2, newPassword);
+            pst.setString(3, newRole.toUpperCase());
+            pst.setInt(4, userId);
+            
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating system user: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteSystemUser(int userId) {
+        String query = "DELETE FROM systemusers WHERE userid = ?";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setInt(1, userId);
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deleting system user: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    
+    
+    // --- PRISONERS  CRUD
+    @Override
+    public java.util.List<String> viewAllPrisoners() {
+        java.util.List<String> prisonersList = new java.util.ArrayList<>();
+        String query = "SELECT prisonerid, name, crime, sentencedurationmonths FROM prisoners ORDER BY prisonerid ASC";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query);
+             ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                String prisonerInfo = "ID: " + rs.getInt("prisonerid") + 
+                                      " | Name: " + rs.getString("name") + 
+                                      " | Crime: " + rs.getString("crime") + 
+                                      " | Sentence: " + rs.getInt("sentencedurationmonths") + " Months";
+                prisonersList.add(prisonerInfo);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching prisoners list: " + e.getMessage());
+        }
+        return prisonersList;
+    }
+
+    @Override
+    public boolean addPrisoner(int prisonerId, String name, String crime, int sentenceMonths) {
+        String query = "INSERT INTO prisoners (prisonerid, name, crime, sentencedurationmonths) VALUES (?, ?, ?, ?)";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setInt(1, prisonerId);
+            pst.setString(2, name);
+            pst.setString(3, crime);
+            pst.setInt(4, sentenceMonths);
+            
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error inserting prisoner record: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean alterPrisoner(int prisonerId, String newName, String newCrime, int newSentenceMonths) {
+        String query = "UPDATE prisoners SET name = ?, crime = ?, sentencedurationmonths = ? WHERE prisonerid = ?";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setString(1, newName);
+            pst.setString(2, newCrime);
+            pst.setInt(3, newSentenceMonths);
+            pst.setInt(4, prisonerId);
+            
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error altering prisoner record: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean deletePrisoner(int prisonerId) {
+        String query = "DELETE FROM prisoners WHERE prisonerid = ?";
+        
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setInt(1, prisonerId);
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error deleting prisoner record: " + e.getMessage());
+            return false;
+        }
     }
 }
