@@ -17,22 +17,25 @@ public class Login extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        //Window Setup
         primaryStage.setTitle("Prison Management System - Login");
-
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(15);
         grid.setVgap(20);
         grid.setPadding(new Insets(40, 40, 40, 40));
 
-        Label sceneTitle = new Label("Secure System Login");
+        //UI Controls 
+        //Labels
+        Label sceneTitle = new Label("Prison Management System Login");
         sceneTitle.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
         grid.add(sceneTitle, 0, 0, 2, 1);
 
+        // Fields
         Label lblUserId = new Label("User ID:");
         grid.add(lblUserId, 0, 1);
         TextField txtUserId = new TextField();
-        txtUserId.setPromptText("Enter your ID");
+        txtUserId.setPromptText("Enter your ID (integer)");
         grid.add(txtUserId, 1, 1);
 
         Label lblPassword = new Label("Password:");
@@ -41,14 +44,16 @@ public class Login extends Application {
         txtPassword.setPromptText("Enter your password");
         grid.add(txtPassword, 1, 2);
 
+        //Buttons
         Button btnLogin = new Button("Sign In");
-        btnLogin.setMaxWidth(Double.MAX_VALUE / 2);
+        btnLogin.setMaxWidth(Double.MAX_VALUE);
         grid.add(btnLogin, 1, 3);
 
         Label lblMessage = new Label();
         lblMessage.setFont(Font.font("Arial", FontWeight.MEDIUM, 20));
         grid.add(lblMessage, 1, 4);
 
+        // event handling executing immediately when the user clicks "Sign In"
         btnLogin.setOnAction(e -> {
             String inputId = txtUserId.getText().trim();
             String inputPassword = txtPassword.getText().trim();
@@ -60,7 +65,7 @@ public class Login extends Application {
             }
             
             try {
-                int authenticatedId = Integer.parseInt(inputId);
+                int authenticatedId = Integer.parseInt(inputId);//convert application string into database safe integer
                 Object userSession = dbOps.authenticateUser(authenticatedId, inputPassword);
                 
                 if (userSession != null) {

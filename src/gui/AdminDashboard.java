@@ -13,9 +13,11 @@ import javafx.stage.Stage;
 
 public class AdminDashboard {
 
+     // instantiating opperations object to perform opperations 
     private SystemAdmin adminSession;
     private DBOperations dbOps = new DBOperations();
 
+    //captures the session details passed forward from the login screen and creates an admin object 
     public AdminDashboard(SystemAdmin adminSession) {
         this.adminSession = adminSession;
     }
@@ -113,7 +115,7 @@ public class AdminDashboard {
         tabPane.getTabs().addAll(userTab, prisonerTab);
         root.setCenter(tabPane);
 
-        // extensively researched event handling (04 -06- 2026) hehe, this way is easier for java 25
+        // extensively researched event handling (04 -06- 2026) 😂😂
 
         // Users Actions
         btnRefreshUsers.setOnAction(e -> {
@@ -121,6 +123,7 @@ public class AdminDashboard {
             userListView.getItems().addAll(dbOps.viewAllSystemUsers());
         });
 
+        //system user add btn
         btnAddUser.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtUserId.getText().trim());
@@ -142,6 +145,7 @@ public class AdminDashboard {
             }
         });
 
+        //system user alter btn
         btnAlterUser.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtUserId.getText().trim());
@@ -159,6 +163,7 @@ public class AdminDashboard {
             }
         });
 
+        //system user delete btn
         btnDeleteUser.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtUserId.getText().trim());
@@ -173,11 +178,13 @@ public class AdminDashboard {
 
 
         // Prisoners Actions
+        //view prisoners btn 
         btnRefreshPrisoners.setOnAction(e -> {
             prisonerListView.getItems().clear();
             prisonerListView.getItems().addAll(dbOps.viewAllPrisoners());
         });
 
+        //add prisoner btn
         btnAddPris.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtPrisId.getText().trim());
@@ -194,6 +201,7 @@ public class AdminDashboard {
             } catch (Exception ex) { lblPrisStatus.setTextFill(Color.RED); lblPrisStatus.setText("Check data types formatting!"); }
         });
 
+        // alter prisoner btn
         btnAlterPris.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtPrisId.getText().trim());
@@ -210,6 +218,7 @@ public class AdminDashboard {
             } catch (Exception ex) { lblPrisStatus.setTextFill(Color.RED); lblPrisStatus.setText("Verify type formats."); }
         });
 
+        //delete prisoner
         btnDeletePris.setOnAction(e -> {
             try {
                 int id = Integer.parseInt(txtPrisId.getText().trim());

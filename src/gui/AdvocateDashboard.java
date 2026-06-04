@@ -21,6 +21,7 @@ public class AdvocateDashboard {
     private DBOperations dbOps = new DBOperations();
     private Advocate currentAdvocate; 
 
+    //captures the session details passed forward from the login screen and creates an advocate object
     public AdvocateDashboard(Advocate advocate) {
         this.currentAdvocate = advocate;
     }
@@ -28,14 +29,17 @@ public class AdvocateDashboard {
     public void show(Stage stage) {
         stage.setTitle("Prison Management System - Advocate Dashboard");
 
+        //Window Layout
         VBox root = new VBox();
         root.setSpacing(20);
         root.setPadding(new Insets(30, 30, 30, 30));
         root.setAlignment(Pos.TOP_CENTER);
 
-        Label lblTitle = new Label("Secure Prisoner Roster");
+        // lable 
+        Label lblTitle = new Label("Prison Management System");
         lblTitle.setFont(Font.font("Tahoma", FontWeight.BOLD, 24));
 
+        // prisoner view table Data Framework
         TableView<Prisoner> table = new TableView<>();
         TableColumn<Prisoner, Integer> colId = new TableColumn<>("Prisoner ID");
         colId.setCellValueFactory(new PropertyValueFactory<>("prisonerId"));
@@ -56,7 +60,7 @@ public class AdvocateDashboard {
         table.getColumns().addAll(colId, colName, colCrime, colSentence);
         table.setPrefHeight(300);
 
-        //FETCH CLEAN LIST
+        //Data Fetching
         List<Prisoner> prisoners = dbOps.getPrisonersForAdvocate(currentAdvocate.getAdvocateId());
         
         for (Prisoner p : prisoners) {

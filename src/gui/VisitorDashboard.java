@@ -20,12 +20,13 @@ import java.util.List;
 
 public class VisitorDashboard {
 
-    //implements dbopperations logic
+    // instantiating opperations object to perform opperations 
     private DBOperations dbOps = new DBOperations(); 
     private Visitor currentVisitor;
     private TableView<Visit> table = new TableView<>();
     private Label lblFeedback = new Label();
 
+        //captures the session details passed forward from the login screen and creates an advocate object
     public VisitorDashboard(Visitor visitor) {
         this.currentVisitor = visitor;
     }
@@ -33,6 +34,7 @@ public class VisitorDashboard {
     public void show(Stage stage) {
         stage.setTitle("Prison Management System - Visitor Dashboard");
 
+        //top-down vertical column layout
         VBox mainRoot = new VBox(25);
         mainRoot.setPadding(new Insets(30, 30, 30, 30));
         mainRoot.setAlignment(Pos.TOP_CENTER);
@@ -44,6 +46,7 @@ public class VisitorDashboard {
         lblSection1.setFont(Font.font("Tahoma", FontWeight.SEMI_BOLD, 14));
         lblSection1.setAlignment(Pos.CENTER_LEFT);
 
+        //maps row columns directly to your database fields.
         TableColumn<Visit, Integer> colId = new TableColumn<>("Visit ID");
         colId.setCellValueFactory(new PropertyValueFactory<>("visitId"));
         colId.setMinWidth(70);
@@ -73,6 +76,7 @@ public class VisitorDashboard {
         Label lblSection2 = new Label("Request a New Visit Window:");
         lblSection2.setFont(Font.font("Tahoma", FontWeight.SEMI_BOLD, 14));
 
+        //groups input elements tightly.
         GridPane formGrid = new GridPane();
         formGrid.setHgap(10);
         formGrid.setVgap(12);
@@ -102,6 +106,7 @@ public class VisitorDashboard {
             String dateVal = txtDate.getText().trim();
             String timeVal = txtTime.getText().trim();
 
+            //event handler monitorin data submission logic, 
             if (dateVal.isEmpty() || timeVal.isEmpty()) {
                 lblFeedback.setTextFill(Color.RED);
                 lblFeedback.setText("Error: Input fields cannot be empty!");
@@ -128,6 +133,7 @@ public class VisitorDashboard {
             }
         });
 
+        // log out btn 
         Button btnLogout = new Button("Log Out");
         btnLogout.setOnAction(e -> {
             Login login = new Login();
