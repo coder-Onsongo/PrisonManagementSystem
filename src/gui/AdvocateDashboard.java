@@ -17,11 +17,9 @@ import java.util.List;
 
 public class AdvocateDashboard {
 
-    // instantiating opperations object to perform opperations 
     private DBOperations dbOps = new DBOperations();
     private Advocate currentAdvocate; 
 
-    //captures the session details passed forward from the login screen and creates an advocate object
     public AdvocateDashboard(Advocate advocate) {
         this.currentAdvocate = advocate;
     }
@@ -29,18 +27,17 @@ public class AdvocateDashboard {
     public void show(Stage stage) {
         stage.setTitle("Prison Management System - Advocate Dashboard");
 
-        //Window Layout
         VBox root = new VBox();
         root.setSpacing(20);
         root.setPadding(new Insets(30, 30, 30, 30));
         root.setAlignment(Pos.TOP_CENTER);
 
-        // lable 
         Label lblTitle = new Label("Prison Management System");
         lblTitle.setFont(Font.font("Tahoma", FontWeight.BOLD, 24));
 
-        // prisoner view table Data Framework
+        // FIXED: Configured Property values to cleanly mirror model classes
         TableView<Prisoner> table = new TableView<>();
+        
         TableColumn<Prisoner, Integer> colId = new TableColumn<>("Prisoner ID");
         colId.setCellValueFactory(new PropertyValueFactory<>("prisonerId"));
         colId.setMinWidth(100);
@@ -50,27 +47,27 @@ public class AdvocateDashboard {
         colName.setMinWidth(150);
 
         TableColumn<Prisoner, String> colCrime = new TableColumn<>("Charge");
-        colCrime.setCellValueFactory(new PropertyValueFactory<>("offence"));
+        colCrime.setCellValueFactory(new PropertyValueFactory<>("crime")); // FIXED: Changed from "offence"
         colCrime.setMinWidth(150);
 
         TableColumn<Prisoner, Integer> colSentence = new TableColumn<>("Sentence Duration (Months)");
-        colSentence.setCellValueFactory(new PropertyValueFactory<>("sentenceYears"));
-        colSentence.setMinWidth(120);
+        colSentence.setCellValueFactory(new PropertyValueFactory<>("sentenceMonths")); // FIXED: Changed from "sentenceYears"
+        colSentence.setMinWidth(150);
 
         table.getColumns().addAll(colId, colName, colCrime, colSentence);
         table.setPrefHeight(300);
 
-        //Data Fetching
+        // Fetch records from database mapping layer
         List<Prisoner> prisoners = dbOps.getPrisonersForAdvocate(currentAdvocate.getAdvocateId());
         
         for (Prisoner p : prisoners) {
-            currentAdvocate.loadPrisoner(p); // Loading directly into domain logic model
+            currentAdvocate.loadPrisoner(p); 
         }
 
-        // Display prisoners collections
+        // FIXED: Clear graphic buffer state before items collection push to prevent view duplicates
+        table.getItems().clear();
         table.getItems().addAll(currentAdvocate.getAssignedPrisoners());
 
-        // Logout Button
         Button btnLogout = new Button("Log Out");
         btnLogout.setPrefSize(120, 35);
         btnLogout.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));
@@ -81,8 +78,13 @@ public class AdvocateDashboard {
 
         root.getChildren().addAll(lblTitle, table, btnLogout);
 
-        Scene scene = new Scene(root, 600, 500);
-        scene.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
+        Scene scene = new Scene(root, 650, 500);
+        
+        // Safety check path rendering configuration for resources compilation
+        if (getClass().getResource("/style/style.css") != null) {
+            scene.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
+        }
+        
         stage.setScene(scene);
         stage.show();
     }

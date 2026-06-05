@@ -30,37 +30,37 @@ public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisi
     public List<Prisoner> getPrisonersForAdvocate(int advocateId) {
         return implementation.getPrisonersForAdvocate(advocateId);
     }  
-
+ // interface impl authenticate logic from impl
     @Override
     public Object authenticateUser(int userId, String password) {
         return implementation.authenticateUser(userId, password);
     }
-    
+     // interface impl for admin view system users logic 
     @Override
     public List<String> viewAllSystemUsers() {
         return implementation.viewAllSystemUsers();
     }
-
+ // interface impl for addmin for adding a user logic 
     @Override
     public boolean addSystemUser(int userId, String name, String password, String role) {
         return implementation.addSystemUser(userId, name, password, role);
     }
-
+ // interface impl for updtating user logic 
     @Override
     public boolean alterSystemUser(int userId, String newName, String newPassword, String newRole) {
         return implementation.alterSystemUser(userId, newName, newPassword, newRole);
     }
-
+ // interface impl for deleting user logic 
     @Override
     public boolean deleteSystemUser(int userId) {
         return implementation.deleteSystemUser(userId);
     }
-
+ // interface impl for admin viewing logic 
     @Override
     public List<String> viewAllPrisoners() {
         return implementation.viewAllPrisoners();
     }
-
+ // interface impl for admin adding prisoners 
     @Override
     public boolean addPrisoner(int prisonerId, String name, String crime, int sentenceMonths) {
         return implementation.addPrisoner(prisonerId, name, crime, sentenceMonths);
@@ -80,7 +80,7 @@ public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisi
     public List<Visit> getAllVisitsForGuard() {
         return implementation.getAllVisitsForGuard();
     }
-
+ // interface impl guard for viewing all visitors logic 
     @Override
     public boolean updateVisitStatus(int visitId, String status, int staffId) {
         return implementation.updateVisitStatus(visitId, status, staffId);

@@ -1,5 +1,5 @@
 package systemsAdmin;
-// crud opperations on systems users and prisoners
+// crud opperations on systems users and prisoners model class
 public class SystemAdmin {
     private int userId;
     private String name;

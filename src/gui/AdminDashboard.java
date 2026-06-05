@@ -126,9 +126,14 @@ public class AdminDashboard {
         btnLogout.setFont(Font.font("Tahoma", FontWeight.BOLD, 14));
         bottomPane.getChildren().add(btnLogout);
         root.setBottom(bottomPane);
+        
 
         // extensively researched event handling (04 -06- 2026) 😂😂
-
+        // log out btn 
+btnLogout.setOnAction(e -> {
+            Login login = new Login();
+            login.start(stage);
+        });
         // Users Actions
         btnRefreshUsers.setOnAction(e -> {
             userListView.getItems().clear();

@@ -82,8 +82,6 @@ public List<Prisoner> getPrisonersForAdvocate(int advocateId) {
             return false;
         }
     }
-
-    // 💡 MOVE ALL SQL QUERIES FROM LOGIN HERE
     @Override
     public Object authenticateUser(int userId, String password) {
         String query = "SELECT role, name FROM systemusers WHERE userid = ? AND password = ?";
@@ -300,7 +298,6 @@ public List<Prisoner> getPrisonersForAdvocate(int advocateId) {
 
     @Override
     public boolean updateVisitStatus(int visitId, String status, int staffId) {
-        // When a Guard approves/rejects, their staffid is permanently attached to the visit record
         String query = "UPDATE visits SET status = ?, staffid = ? WHERE visitid = ?";
         try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
             pst.setString(1, status.toUpperCase());

@@ -26,7 +26,7 @@ public class DBConnection {
            System.out.println("driver loaded success");
        }
        catch(SQLException sqle) {
-    System.out.println("driver loadeer failed "+ sqle.getMessage());
+    System.out.println("driver loader failed "+ sqle.getMessage());
 }
        return con;
    }

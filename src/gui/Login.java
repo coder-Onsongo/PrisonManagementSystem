@@ -101,7 +101,6 @@ public class Login extends Application {
                     } catch (Exception dashboardEx) {
                         
                         System.err.println("Failed to launch Guard Dashboard UI: " + dashboardEx.getMessage());
-                        dashboardEx.printStackTrace();
                         lblMessage.setTextFill(Color.RED);
                         lblMessage.setText("UI Error: Could not load Guard Dashboard.");
                     }
