@@ -88,6 +88,24 @@ public class Login extends Application {
                         gui.AdminDashboard dashboard = new gui.AdminDashboard((systemsAdmin.SystemAdmin) userSession);
                         dashboard.show(primaryStage);
                         }
+                   else if (userSession instanceof model.Guard) {
+                        System.out.println("Switching to: Guard Dashboard");
+                        model.Guard loggedInGuard = (model.Guard) userSession;
+    
+                    try {
+                        gui.GuardDashboard guardDash = new gui.GuardDashboard(
+                            loggedInGuard.getGuardId(), 
+                            loggedInGuard.getFullName()
+                        ); 
+                        guardDash.start(primaryStage);
+                    } catch (Exception dashboardEx) {
+                        
+                        System.err.println("Failed to launch Guard Dashboard UI: " + dashboardEx.getMessage());
+                        dashboardEx.printStackTrace();
+                        lblMessage.setTextFill(Color.RED);
+                        lblMessage.setText("UI Error: Could not load Guard Dashboard.");
+                    }
+}
                 } else {
                     lblMessage.setTextFill(Color.RED);
                     lblMessage.setText("Access Denied: Invalid ID or Password.");

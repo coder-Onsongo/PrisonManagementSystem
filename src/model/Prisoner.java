@@ -3,47 +3,21 @@ package model;
 public class Prisoner {
     private int prisonerId;
     private String fullName;
-    private String offence;
-    private int sentenceYears;
-    private String cellNumber;
+    private String crime;
+    private int sentenceMonths;
 
-    public Prisoner(int prisonerId, String fullName, String offence, int sentenceYears, String cellNumber) {
+    public Prisoner(int prisonerId, String fullName, String crime, int sentenceMonths) {
         this.prisonerId = prisonerId;
         this.fullName = fullName;
-        this.offence = offence;
-        this.sentenceYears = sentenceYears;
-        this.cellNumber = cellNumber;
+        this.crime = crime;
+        this.sentenceMonths = sentenceMonths;
     }
 
-    public int getPrisonerId() {
-        return prisonerId;
-    }
+    public int getPrisonerId() { return prisonerId; }
+    public String getFullName() { return fullName; }
+    public String getCrime() { return crime; }
+    public int getSentenceMonths() { return sentenceMonths; }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getOffence() {
-        return offence;
-    }
-
-    public int getSentenceYears() {
-        return sentenceYears;
-    }
-
-    public String getCellNumber() {
-        return cellNumber;
-    }
-
-    public void setOffence(String offence) {
-        this.offence = offence;
-    }
-
-    public void setSentenceYears(int sentenceYears) {
-        this.sentenceYears = sentenceYears;
-    }
-
-    public void setCellNumber(String cellNumber) {
-        this.cellNumber = cellNumber;
-    }
+    public void setCrime(String crime) { this.crime = crime; }
+    public void setSentenceMonths(int sentenceMonths) { this.sentenceMonths = sentenceMonths; }
 }

@@ -11,6 +11,12 @@ public class Guard {
         this.fullName = fullName;
         this.badgeNumber = badgeNumber;
     }
+    
+    public Guard(int guardId, String fullName) {
+        this.guardId = guardId;
+        this.fullName = fullName;
+        this.badgeNumber = "OFFICER-ACTIVE";
+    }
 
     public int getGuardId() {
         return guardId;

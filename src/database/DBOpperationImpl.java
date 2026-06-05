@@ -7,35 +7,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits, DBOAdminPrisonerOperations, DBOSystemUserOperations {
+public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsertVisit,  DBOSelectVisits, DBOAdminPrisonerOperations, DBOSystemUserOperations,DBOGuardViewVisits, DBOGuardUpdateVisit {
     private DBConnection dbc = new DBConnection();
 
 // advocate view their prisoners
     @Override
-    public List<Prisoner> getPrisonersForAdvocate(int advocateId) {
-        List<Prisoner> list = new ArrayList<>();
-        String query = "SELECT p.prisonerid, p.name, p.crime, p.sentencedurationmonths " +
-                       "FROM prisoners p " +
-                       "JOIN advocate_prisoner ap ON p.prisonerid = ap.prisonerid " +
-                       "WHERE ap.advocateid = ?";
-        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
-            pst.setInt(1, advocateId);
-            try (ResultSet rs = pst.executeQuery()) {
-                while (rs.next()) {
-                    list.add(new Prisoner(
-                        rs.getInt("prisonerid"),
-                        rs.getString("name"),
-                        rs.getString("crime"),
-                        rs.getInt("sentencedurationmonths"),
-                        "Cell B-1"
-                    ));
-                }
+public List<Prisoner> getPrisonersForAdvocate(int advocateId) {
+    List<Prisoner> list = new ArrayList<>();
+    String query = "SELECT p.prisonerid, p.name, p.crime, p.sentencedurationmonths " +
+                   "FROM prisoners p " +
+                   "JOIN advocate_prisoner ap ON p.prisonerid = ap.prisonerid " +
+                   "WHERE ap.advocateid = ?";
+    try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+        pst.setInt(1, advocateId);
+        try (ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                // Your database natively stores months, which matches your refactored constructor slot!
+                int totalMonths = rs.getInt("sentencedurationmonths");
+
+                list.add(new Prisoner(
+                    rs.getInt("prisonerid"),
+                    rs.getString("name"),
+                    rs.getString("crime"),
+                    totalMonths
+                ));
             }
-        } catch (SQLException e) {
-            System.err.println("DB Error fetching advocate prisoners: " + e.getMessage());
         }
-        return list;
+    } catch (SQLException e) {
+        System.err.println("DB Error fetching advocate prisoners: " + e.getMessage());
     }
+    return list;
+}
 
     //visitor previous visits
     @Override
@@ -120,7 +122,10 @@ public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsert
                         return new systemsAdmin.SystemAdmin(userId, realName, password);
                     }
                     
-                    // Add Guard instantiation here later if you build a Guard class
+                   else if ("GUARD".equalsIgnoreCase(databaseRole)) {
+                        return new model.Guard(userId, realName, "OFFICER-ACTIVE");
+}
+                   
                 }
             }
         } catch (SQLException e) {
@@ -222,13 +227,14 @@ public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsert
 
     @Override
     public boolean addPrisoner(int prisonerId, String name, String crime, int sentenceMonths) {
-        String query = "INSERT INTO prisoners (prisonerid, name, crime, sentencedurationmonths) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO prisoners (prisonerid, name, dateofbirth, dateofadmittance, sentencedurationmonths, crime) " +
+                       "VALUES (?, ?, '1995-01-01', CURRENT_DATE, ?, ?)";
         
         try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
             pst.setInt(1, prisonerId);
             pst.setString(2, name);
-            pst.setString(3, crime);
-            pst.setInt(4, sentenceMonths);
+            pst.setInt(3, sentenceMonths);
+            pst.setString(4, crime);
             
             return pst.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -263,6 +269,46 @@ public class DBOpperationImpl implements DBOLogin, AdvocateOperations, DBOInsert
             return pst.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error deleting prisoner record: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public List<Visit> getAllVisitsForGuard() {
+        List<Visit> list = new ArrayList<>();
+        // Fetches all visits ordered by status so PENDING ones appear prominently
+        String query = "SELECT visitid, visitdate, visittime, prisonerid, visitorid, staffid, status " +
+                       "FROM visits ORDER BY CASE WHEN status = 'PENDING' THEN 1 ELSE 2 END, visitdate DESC";
+        try (PreparedStatement pst = dbc.con.prepareStatement(query);
+             ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                list.add(new Visit(
+                    rs.getInt("visitid"),
+                    rs.getString("visitdate"),
+                    rs.getString("visittime"),
+                    rs.getInt("prisonerid"),
+                    rs.getInt("visitorid"),
+                    rs.getInt("staffid"), // Will be 0 if NULL in database
+                    rs.getString("status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("DB Error fetching guard visits: " + e.getMessage());
+        }
+        return list;
+    }
+
+    @Override
+    public boolean updateVisitStatus(int visitId, String status, int staffId) {
+        // When a Guard approves/rejects, their staffid is permanently attached to the visit record
+        String query = "UPDATE visits SET status = ?, staffid = ? WHERE visitid = ?";
+        try (PreparedStatement pst = dbc.con.prepareStatement(query)) {
+            pst.setString(1, status.toUpperCase());
+            pst.setInt(2, staffId);
+            pst.setInt(3, visitId);
+            return pst.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("DB Error updating visit status: " + e.getMessage());
             return false;
         }
     }

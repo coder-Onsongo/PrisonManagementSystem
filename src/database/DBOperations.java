@@ -5,7 +5,7 @@ import visitor.Visit;
 import java.util.List;
 
 
-public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits, DBOAdminPrisonerOperations, DBOSystemUserOperations {
+public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisit, DBOSelectVisits, DBOAdminPrisonerOperations, DBOSystemUserOperations, DBOGuardViewVisits, DBOGuardUpdateVisit {
 
     private final DBOpperationImpl implementation;
 
@@ -74,5 +74,15 @@ public class DBOperations implements DBOLogin, AdvocateOperations, DBOInsertVisi
     @Override
     public boolean deletePrisoner(int prisonerId) {
         return implementation.deletePrisoner(prisonerId);
+    }
+    
+    @Override
+    public List<Visit> getAllVisitsForGuard() {
+        return implementation.getAllVisitsForGuard();
+    }
+
+    @Override
+    public boolean updateVisitStatus(int visitId, String status, int staffId) {
+        return implementation.updateVisitStatus(visitId, status, staffId);
     }
 }
