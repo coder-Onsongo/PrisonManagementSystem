@@ -5,7 +5,7 @@ import java.sql.*;
 public class DBConnection {
     public Connection con;
     String url="jdbc:postgresql://localhost:5432/prisonmanagementdb";
-    String password ="admin123";
+    String password ="postgres";
     String user = "postgres";
     
     public DBConnection(){
@@ -25,18 +25,9 @@ public class DBConnection {
            con  = DriverManager.getConnection(url, user, password);
            System.out.println("driver loaded success");
        }
-<<<<<<< HEAD
        catch(SQLException sqle) {
-    System.out.println("driver loadeer failed "+ sqle.getMessage())
-            ;
-    
+    System.out.println("driver loadeer failed "+ sqle.getMessage());
 }
-       
-=======
-       catch(SQLException sqle){
-           System.out.println("driver loadeer failed "+ sqle.getMessage());
-       }
->>>>>>> b3dd21e08003f196dcab0d220dd9841ba0f7f145
        return con;
    }
 

@@ -248,6 +248,7 @@ public class AdminDashboard {
         btnRefreshPrisoners.fire();
 
         Scene scene = new Scene(root, 850, 550);
+        scene.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }

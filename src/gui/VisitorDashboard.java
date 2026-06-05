@@ -146,6 +146,7 @@ public class VisitorDashboard {
         mainRoot.getChildren().addAll(lblTitle, lblSection1, table, lblSection2, formGrid, bottomControls);
 
         Scene scene = new Scene(mainRoot, 600, 520);
+        scene.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }

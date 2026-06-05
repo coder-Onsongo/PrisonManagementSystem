@@ -82,6 +82,7 @@ public class AdvocateDashboard {
         root.getChildren().addAll(lblTitle, table, btnLogout);
 
         Scene scene = new Scene(root, 600, 500);
+        scene.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }

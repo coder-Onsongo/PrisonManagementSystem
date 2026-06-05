@@ -3,17 +3,14 @@ package gui;
 import database.DBOperations;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import visitor.Visit;
 import java.util.List;
+import javafx.beans.value.ChangeListener;
 
 public class GuardDashboard {
 
@@ -29,6 +26,7 @@ public class GuardDashboard {
     private Button btnApprove;
     private Button btnReject;
     private Label lblStatusMessage;
+    private ChangeListener<Number> selectionListener;
 
     public GuardDashboard(int guardId, String guardName) {
         this.loggedInGuardId = guardId;
@@ -39,23 +37,20 @@ public class GuardDashboard {
         stage.setTitle("Prison Management System - Guard Dashboard");
 
         BorderPane mainLayout = new BorderPane();
-        mainLayout.setPadding(new Insets(20));
-        mainLayout.setStyle("-fx-background-color: #fcfcfc;");
+        mainLayout.setId("main-layout");
 
         HBox topBar = new HBox();
-        topBar.setPadding(new Insets(0, 0, 20, 0));
+        topBar.setId("top-bar");
         topBar.setAlignment(Pos.CENTER_LEFT);
-        topBar.setStyle("-fx-border-color: #eeeeee; -fx-border-width: 0 0 1 0;");
         
         Label lblWelcome = new Label("Welcome, Officer " + guardName + " (ID: " + loggedInGuardId + ")");
-        lblWelcome.setFont(Font.font("Segoe UI", FontWeight.BOLD, 18));
-        lblWelcome.setTextFill(Color.web("#333333"));
+        lblWelcome.setId("welcome-label");
         
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
         Button btnLogout = new Button("Log Out");
-        btnLogout.setStyle("-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15 8 15;");
+        btnLogout.setId("logout-button");
         btnLogout.setOnAction(e -> {
             stage.close();
             System.out.println("Guard session ended safely. Logged out.");
@@ -64,86 +59,87 @@ public class GuardDashboard {
         topBar.getChildren().addAll(lblWelcome, spacer, btnLogout);
         mainLayout.setTop(topBar);
 
-        VBox leftBox = new VBox(12);
+        VBox leftBox = new VBox();
+        leftBox.setId("left-box");
         HBox.setHgrow(leftBox, Priority.ALWAYS);
         
         Label lblListHeader = new Label("Incoming & Historical Visit Requests:");
-        lblListHeader.setFont(Font.font("Segoe UI", FontWeight.SEMI_BOLD, 14));
-        lblListHeader.setTextFill(Color.web("#555555"));
+        lblListHeader.getStyleClass().add("section-header");
         
         visitListView = new ListView<>();
         visitObservableList = FXCollections.observableArrayList();
         visitListView.setItems(visitObservableList);
-        visitListView.setStyle("-fx-font-family: 'Consolas'; -fx-font-size: 13px;");
+        visitListView.setId("visit-list-view");
         VBox.setVgrow(visitListView, Priority.ALWAYS);
         
         Button btnRefresh = new Button("🔄 Refresh Bookings");
+        btnRefresh.setId("refresh-button");
         btnRefresh.setMaxWidth(Double.MAX_VALUE);
-        btnRefresh.setStyle("-fx-padding: 10; -fx-font-weight: bold;");
         btnRefresh.setOnAction(e -> populateVisitsList());
         
         leftBox.getChildren().addAll(lblListHeader, visitListView, btnRefresh);
 
-        VBox rightBox = new VBox(15);
-        rightBox.setMinWidth(320);
-        rightBox.setPadding(new Insets(0, 0, 0, 20));
+        VBox rightBox = new VBox();
+        rightBox.setId("right-box");
         rightBox.setAlignment(Pos.TOP_CENTER);
-        rightBox.setStyle("-fx-border-color: #e0e0e0; -fx-border-width: 0 0 0 1;");
 
         Label lblActionsHeader = new Label("Review Selection");
-        lblActionsHeader.setFont(Font.font("Segoe UI", FontWeight.BOLD, 15));
-        lblActionsHeader.setTextFill(Color.web("#444444"));
+        lblActionsHeader.getStyleClass().add("section-header");
 
         lblSelectedVisit = new Label("No visit selected.\nSelect a pending record from the left panel.");
+        lblSelectedVisit.setId("selected-visit-label");
         lblSelectedVisit.setWrapText(true);
         lblSelectedVisit.setAlignment(Pos.CENTER);
-        lblSelectedVisit.setMinHeight(120);
-        lblSelectedVisit.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-border-color: #dddddd; -fx-border-radius: 4; -fx-background-radius: 4; -fx-text-alignment: center;");
         lblSelectedVisit.setMaxWidth(Double.MAX_VALUE);
 
         btnApprove = new Button("✔ Approve Visit");
-        btnApprove.setStyle("-fx-background-color: #5cb85c; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10;");
+        btnApprove.setId("approve-button");
         btnApprove.setMaxWidth(Double.MAX_VALUE);
         btnApprove.setDisable(true);
         btnApprove.setOnAction(e -> handleStatusUpdate("APPROVED"));
 
         btnReject = new Button("❌ Reject Visit");
-        btnReject.setStyle("-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10;");
+        btnReject.setId("reject-button");
         btnReject.setMaxWidth(Double.MAX_VALUE);
         btnReject.setDisable(true);
         btnReject.setOnAction(e -> handleStatusUpdate("REJECTED"));
 
         lblStatusMessage = new Label();
-        lblStatusMessage.setFont(Font.font("Segoe UI", FontWeight.MEDIUM, 13));
+        lblStatusMessage.setId("status-message-label");
         lblStatusMessage.setWrapText(true);
 
         rightBox.getChildren().addAll(lblActionsHeader, lblSelectedVisit, btnApprove, btnReject, lblStatusMessage);
 
         HBox splitLayout = new HBox();
-        splitLayout.setPadding(new Insets(15, 0, 0, 0));
+        splitLayout.setId("split-layout");
         splitLayout.getChildren().addAll(leftBox, rightBox);
         mainLayout.setCenter(splitLayout);
 
-        visitListView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+        selectionListener = (observable, oldValue, newValue) -> {
             int index = newValue.intValue();
             if (index >= 0 && currentVisitsList != null && index < currentVisitsList.size()) {
                 Visit selectedVisit = currentVisitsList.get(index);
                 displaySelectedVisit(selectedVisit);
-            } else if (index == -1 && visitListView.getItems().isEmpty()) {
-                System.out.println("List is refreshing, skipping structural panel wipe.");
             } else {
                 resetActionPanel();
             }
-        });
+        };
+
+        visitListView.getSelectionModel().selectedIndexProperty().addListener(selectionListener);
 
         populateVisitsList();
 
         Scene scene = new Scene(mainLayout, 900, 550);
+        scene.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
     }
 
     private void populateVisitsList() {
+        if (visitListView != null && selectionListener != null) {
+            visitListView.getSelectionModel().selectedIndexProperty().removeListener(selectionListener);
+        }
+
         visitObservableList.clear();
         try {
             currentVisitsList = dbOps.getAllVisitsForGuard();
@@ -162,6 +158,10 @@ public class GuardDashboard {
         } catch (Exception ex) {
             System.err.println("Error rendering PostgreSQL data rows: " + ex.getMessage());
             visitObservableList.add("Error loading data from database connection.");
+        } finally {
+            if (visitListView != null && selectionListener != null) {
+                visitListView.getSelectionModel().selectedIndexProperty().addListener(selectionListener);
+            }
         }
     }
 
@@ -174,18 +174,21 @@ public class GuardDashboard {
         String info = String.format("Visit Record Details:\n\n• Visit ID: %d\n• Schedule Date: %s\n• Schedule Time: %s\n• Target Prisoner ID: %d\n• Submitting Visitor ID: %d\n\nStatus Context: %s",
                 visit.getVisitId(), visit.getDate(), visit.getTime(), visit.getPrisonerId(), visit.getVisitorId(), visit.getStatus().toUpperCase());
         lblSelectedVisit.setText(info);
-        lblSelectedVisit.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-border-color: #dddddd; -fx-border-radius: 4; -fx-background-radius: 4; -fx-text-alignment: left; -fx-font-family: 'Segoe UI';");
+        lblSelectedVisit.getStyleClass().remove("placeholder-text");
+        lblSelectedVisit.getStyleClass().add("active-text");
+
+        lblStatusMessage.getStyleClass().removeAll("status-pending", "status-finalized");
 
         if ("PENDING".equalsIgnoreCase(visit.getStatus())) {
             btnApprove.setDisable(false);
             btnReject.setDisable(false);
             lblStatusMessage.setText("Action Required: Awaiting decision...");
-            lblStatusMessage.setTextFill(Color.BLUE);
+            lblStatusMessage.getStyleClass().add("status-pending");
         } else {
             btnApprove.setDisable(true);
             btnReject.setDisable(true);
             lblStatusMessage.setText("Finalized Record (Signed by Staff ID: " + visit.getStaffId() + ").");
-            lblStatusMessage.setTextFill(Color.GRAY);
+            lblStatusMessage.getStyleClass().add("status-finalized");
         }
     }
 
@@ -197,21 +200,25 @@ public class GuardDashboard {
         
         boolean success = dbOps.updateVisitStatus(selectedVisit.getVisitId(), targetStatus, loggedInGuardId);
 
+        lblStatusMessage.getStyleClass().removeAll("status-success", "status-error");
+
         if (success) {
-            lblStatusMessage.setText("Success! Status updated to " + targetStatus);
-            lblStatusMessage.setTextFill(Color.GREEN);
             populateVisitsList(); 
+            lblStatusMessage.setText("Success! Status updated to " + targetStatus);
+            lblStatusMessage.getStyleClass().add("status-success");
         } else {
             lblStatusMessage.setText("Database Exception: Error processing update status write.");
-            lblStatusMessage.setTextFill(Color.RED);
+            lblStatusMessage.getStyleClass().add("status-error");
         }
     }
 
     private void resetActionPanel() {
         lblSelectedVisit.setText("No visit selected.\nSelect a pending record from the left panel.");
-        lblSelectedVisit.setStyle("-fx-background-color: #f5f5f5; -fx-padding: 15; -fx-border-color: #dddddd; -fx-border-radius: 4; -fx-background-radius: 4; -fx-text-alignment: center;");
+        lblSelectedVisit.getStyleClass().remove("active-text");
+        lblSelectedVisit.getStyleClass().add("placeholder-text");
         btnApprove.setDisable(true);
         btnReject.setDisable(true);
         lblStatusMessage.setText("");
+        lblStatusMessage.getStyleClass().removeAll("status-pending", "status-finalized", "status-success", "status-error");
     }
 }
